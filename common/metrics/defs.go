@@ -2237,6 +2237,10 @@ const (
 	ReplicationTasksFailed
 	ReplicationTasksLag
 	ReplicationLatency
+	GenerateReplicationTaskLatency
+	ReplicationTaskInQueueLatency
+	ReplicationPollRequestLatency
+	ReplicationTaskBatchProcessLatency
 	ReplicationTasksFetched
 	ReplicationTasksReturned
 	ReplicationTasksAppliedLatency
@@ -2721,6 +2725,10 @@ var MetricDefs = map[ServiceIdx]map[int]metricDefinition{
 		ReplicationTasksFailed:                            NewCounterDef("replication_tasks_failed"),
 		ReplicationTasksLag:                               NewTimerDef("replication_tasks_lag"),
 		ReplicationLatency:                                NewTimerDef("replication_latency"),
+		GenerateReplicationTaskLatency:                    NewTimerDef("generate_replication_task_latency"),
+		ReplicationTaskInQueueLatency:                     NewTimerDef("replication_task_in_queue_latency"),
+		ReplicationPollRequestLatency:                     NewTimerDef("replication_poll_request_latency"),
+		ReplicationTaskBatchProcessLatency:                NewTimerDef("replication_task_batch_process_latency"),
 		ReplicationTasksFetched:                           NewTimerDef("replication_tasks_fetched"),
 		ReplicationTasksReturned:                          NewTimerDef("replication_tasks_returned"),
 		ReplicationTasksAppliedLatency:                    NewTimerDef("replication_tasks_applied_latency"),

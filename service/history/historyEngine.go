@@ -2774,6 +2774,13 @@ func (e *historyEngineImpl) GetReplicationMessages(
 		return nil, err
 	}
 	e.logger.Debug("Successfully fetched replication messages.", tag.Counter(len(replicationMessages.ReplicationTasks)))
+	if len(replicationMessages.ReplicationTasks) == 0 {
+		// The remote cluster is on latest of the replication queue.
+		// Update acked timestamp to be the latest.
+		if ackMessageID != persistence.EmptyQueueMessageID {
+			e.shard.UpdateRemoteClusterInfo(pollingCluster, ackMessageID, e.timeSource.Now())
+		}
+	}
 
 	return replicationMessages, nil
 }

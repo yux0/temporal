@@ -232,6 +232,7 @@ func (p *taskProcessorImpl) pollProcessReplicationTasks() (retError error) {
 	}()
 
 	taskIterator := collection.NewPagingIterator(p.paginationFn)
+	stopWatch := p.metricsClient.Scope(metrics.ReplicationTaskFetcherScope).StartTimer(metrics.ReplicationTaskBatchProcessLatency)
 	for taskIterator.HasNext() && !p.isStopped() {
 		task, err := taskIterator.Next()
 		if err != nil {
@@ -253,6 +254,7 @@ func (p *taskProcessorImpl) pollProcessReplicationTasks() (retError error) {
 		p.maxRxProcessedTaskID = replicationTask.GetSourceTaskId()
 		p.maxRxProcessedTimestamp = timestamp.TimeValue(replicationTask.GetVisibilityTime())
 	}
+	stopWatch.Stop()
 
 	if !p.isStopped() {
 		// all tasks fetched successfully processed
@@ -438,6 +440,7 @@ func (p *taskProcessorImpl) convertTaskToDLQTask(
 }
 
 func (p *taskProcessorImpl) paginationFn(_ []byte) ([]interface{}, []byte, error) {
+	stopWatcher := p.metricsClient.Scope(metrics.ReplicationTaskFetcherScope).StartTimer(metrics.ReplicationPollRequestLatency)
 	respChan := make(chan *replicationspb.ReplicationMessages, 1)
 	p.requestChan <- &replicationTaskRequest{
 		token: &replicationspb.ReplicationToken{
@@ -451,6 +454,7 @@ func (p *taskProcessorImpl) paginationFn(_ []byte) ([]interface{}, []byte, error
 
 	select {
 	case resp, ok := <-respChan:
+		stopWatcher.Stop()
 		if !ok {
 			return nil, nil, nil
 		}
