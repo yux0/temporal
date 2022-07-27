@@ -205,12 +205,15 @@ func (p *ackMgrImpl) GetTasks(
 ) (*replicationspb.ReplicationMessages, error) {
 
 	minTaskID, maxTaskID := p.taskIDsRange(queryMessageID)
+	subScope := p.metricsClient.Scope(metrics.ReplicatorQueueProcessorScope)
+	stopWatcher := subScope.StartTimer(metrics.GenerateReplicationTaskLatency)
 	replicationTasks, lastTaskID, err := p.getTasks(
 		ctx,
 		minTaskID,
 		maxTaskID,
 		p.pageSize,
 	)
+	stopWatcher.Stop()
 	if err != nil {
 		return nil, err
 	}
@@ -224,14 +227,12 @@ func (p *ackMgrImpl) GetTasks(
 		int(maxTaskID-lastTaskID),
 	)
 
-	p.metricsClient.RecordDistribution(
-		metrics.ReplicatorQueueProcessorScope,
+	subScope.RecordDistribution(
 		metrics.ReplicationTasksFetched,
 		len(replicationTasks),
 	)
 
-	p.metricsClient.RecordDistribution(
-		metrics.ReplicatorQueueProcessorScope,
+	subScope.RecordDistribution(
 		metrics.ReplicationTasksReturned,
 		len(replicationTasks),
 	)
@@ -280,6 +281,12 @@ func (p *ackMgrImpl) getTasks(
 			); err != nil {
 				return nil, 0, err
 			} else if replicationTask != nil {
+				p.metricsClient.Scope(
+					metrics.ReplicatorQueueProcessorScope,
+				).RecordDistribution(
+					metrics.ReplicationTaskInQueueLatency,
+					int(time.Now().Sub(*replicationTask.GetVisibilityTime())),
+				)
 				replicationTasks = append(replicationTasks, replicationTask)
 			}
 		}
