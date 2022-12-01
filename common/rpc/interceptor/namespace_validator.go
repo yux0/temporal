@@ -35,6 +35,8 @@ import (
 
 	"go.temporal.io/server/common"
 	"go.temporal.io/server/common/dynamicconfig"
+	"go.temporal.io/server/common/log"
+	"go.temporal.io/server/common/log/tag"
 	"go.temporal.io/server/common/namespace"
 )
 
@@ -44,7 +46,7 @@ type (
 		namespaceRegistry               namespace.Registry
 		tokenSerializer                 common.TaskTokenSerializer
 		enableTokenNamespaceEnforcement dynamicconfig.BoolPropertyFn
-		maxNamespaceLength              dynamicconfig.IntPropertyFn
+		logger                          log.Logger
 	}
 )
 
@@ -71,33 +73,33 @@ var (
 )
 
 var _ grpc.UnaryServerInterceptor = (*NamespaceValidatorInterceptor)(nil).StateValidationIntercept
-var _ grpc.UnaryServerInterceptor = (*NamespaceValidatorInterceptor)(nil).LengthValidationIntercept
+var _ grpc.UnaryServerInterceptor = (*NamespaceValidatorInterceptor)(nil).PreAuthValidationIntercept
 
 func NewNamespaceValidatorInterceptor(
 	namespaceRegistry namespace.Registry,
 	enableTokenNamespaceEnforcement dynamicconfig.BoolPropertyFn,
-	maxNamespaceLength dynamicconfig.IntPropertyFn,
+	logger log.Logger,
 ) *NamespaceValidatorInterceptor {
 	return &NamespaceValidatorInterceptor{
 		namespaceRegistry:               namespaceRegistry,
 		tokenSerializer:                 common.NewProtoTaskTokenSerializer(),
 		enableTokenNamespaceEnforcement: enableTokenNamespaceEnforcement,
-		maxNamespaceLength:              maxNamespaceLength,
+		logger:                          logger,
 	}
 }
 
-func (ni *NamespaceValidatorInterceptor) LengthValidationIntercept(
+func (ni *NamespaceValidatorInterceptor) PreAuthValidationIntercept(
 	ctx context.Context,
 	req interface{},
 	info *grpc.UnaryServerInfo,
 	handler grpc.UnaryHandler,
 ) (interface{}, error) {
-	reqWithNamespace, hasNamespace := req.(NamespaceNameGetter)
-	if hasNamespace {
-		namespaceName := namespace.Name(reqWithNamespace.GetNamespace())
-		if len(namespaceName) > ni.maxNamespaceLength() {
-			return nil, errNamespaceTooLong
-		}
+	_, err := ni.extractNamespace(req)
+	if err != nil {
+		ni.logger.Error("Unauthorized request with invalid namespace", tag.Error(err))
+		// Translate the error to permission denied error because this validation is pre-auth.
+		// Do not return detail error to prevent data breach.
+		return nil, serviceerror.NewPermissionDenied("Permission validation failed.", "")
 	}
 
 	return handler(ctx, req)
