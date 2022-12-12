@@ -74,9 +74,10 @@ type (
 
 	// taskProcessorImpl is responsible for processing replication tasks for a shard.
 	taskProcessorImpl struct {
-		currentCluster          string
+		status int32
+
 		sourceCluster           string
-		status                  int32
+		pollingShardID          int32
 		shard                   shard.Context
 		historyEngine           shard.Engine
 		historySerializer       serialization.Serializer
@@ -109,6 +110,7 @@ type (
 
 // NewTaskProcessor creates a new replication task processor.
 func NewTaskProcessor(
+	pollingShardID int32,
 	shard shard.Context,
 	historyEngine shard.Engine,
 	config *configs.Config,
@@ -132,9 +134,9 @@ func NewTaskProcessor(
 		WithExpirationInterval(config.ReplicationTaskProcessorErrorRetryExpiration(shardID))
 
 	return &taskProcessorImpl{
-		currentCluster:          shard.GetClusterMetadata().GetCurrentClusterName(),
-		sourceCluster:           replicationTaskFetcher.getSourceCluster(),
 		status:                  common.DaemonStatusInitialized,
+		pollingShardID:          pollingShardID,
+		sourceCluster:           replicationTaskFetcher.getSourceCluster(),
 		shard:                   shard,
 		historyEngine:           historyEngine,
 		historySerializer:       eventSerializer,
