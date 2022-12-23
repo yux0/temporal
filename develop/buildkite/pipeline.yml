@@ -27,19 +27,19 @@ steps:
     agents:
       queue: "default"
       docker: "*"
-    command: "make db-integration-test-coverage"
+    command: "make integration-test-coverage"
     artifact_paths:
       - ".coverage/*.out"
     plugins:
       - docker-compose#v3.8.0:
-          run: db-integration-test
+          run: integration-test
           config: ./develop/buildkite/docker-compose.yml
 
-  - label: ":golang: integration test with cassandra"
+  - label: ":golang: functional test with cassandra"
     agents:
       queue: "default"
       docker: "*"
-    command: "make integration-test-coverage"
+    command: "make functional-test-coverage"
     artifact_paths:
       - ".coverage/*.out"
     retry:
@@ -47,14 +47,14 @@ steps:
         limit: 1
     plugins:
       - docker-compose#v3.8.0:
-          run: integration-test-cassandra
+          run: functional-test-cassandra
           config: ./develop/buildkite/docker-compose.yml
 
-  - label: ":golang: integration test with cassandra (ES8)"
+  - label: ":golang: functional test with cassandra (ES8)"
     agents:
       queue: "default"
       docker: "*"
-    command: "make integration-test-coverage"
+    command: "make functional-test-coverage"
     artifact_paths:
       - ".coverage/*.out"
     retry:
@@ -62,14 +62,14 @@ steps:
         limit: 1
     plugins:
       - docker-compose#v3.8.0:
-          run: integration-test-cassandra
+          run: functional-test-cassandra
           config: ./develop/buildkite/docker-compose-es8.yml
 
-  - label: ":golang: integration xdc test with cassandra"
+  - label: ":golang: functional xdc test with cassandra"
     agents:
       queue: "default"
       docker: "*"
-    command: "make integration-test-xdc-coverage"
+    command: "make functional-test-xdc-coverage"
     artifact_paths:
       - ".coverage/*.out"
     retry:
@@ -77,14 +77,14 @@ steps:
         limit: 1
     plugins:
       - docker-compose#v3.8.0:
-          run: integration-test-xdc-cassandra
+          run: functional-test-xdc-cassandra
           config: ./develop/buildkite/docker-compose.yml
 
-  - label: ":golang: integration ndc test with cassandra"
+  - label: ":golang: functional ndc test with cassandra"
     agents:
       queue: "default"
       docker: "*"
-    command: "make integration-test-ndc-coverage"
+    command: "make functional-test-ndc-coverage"
     artifact_paths:
       - ".coverage/*.out"
     retry:
@@ -92,14 +92,14 @@ steps:
         limit: 1
     plugins:
       - docker-compose#v3.8.0:
-          run: integration-test-xdc-cassandra
+          run: functional-test-xdc-cassandra
           config: ./develop/buildkite/docker-compose.yml
 
-  - label: ":golang: integration test with mysql"
+  - label: ":golang: functional test with mysql"
     agents:
       queue: "default"
       docker: "*"
-    command: "make integration-test-coverage"
+    command: "make functional-test-coverage"
     artifact_paths:
       - ".coverage/*.out"
     retry:
@@ -107,14 +107,14 @@ steps:
         limit: 1
     plugins:
       - docker-compose#v3.8.0:
-          run: integration-test-mysql
+          run: functional-test-mysql
           config: ./develop/buildkite/docker-compose.yml
 
-  - label: ":golang: integration xdc test with mysql"
+  - label: ":golang: functional xdc test with mysql"
     agents:
       queue: "default"
       docker: "*"
-    command: "make integration-test-xdc-coverage"
+    command: "make functional-test-xdc-coverage"
     artifact_paths:
       - ".coverage/*.out"
     retry:
@@ -125,11 +125,11 @@ steps:
           run: integration-test-xdc-mysql
           config: ./develop/buildkite/docker-compose.yml
 
-  - label: ":golang: integration ndc test with mysql"
+  - label: ":golang: functional ndc test with mysql"
     agents:
       queue: "default"
       docker: "*"
-    command: "make integration-test-ndc-coverage"
+    command: "make functional-test-ndc-coverage"
     artifact_paths:
       - ".coverage/*.out"
     retry:
@@ -137,14 +137,14 @@ steps:
         limit: 1
     plugins:
       - docker-compose#v3.8.0:
-          run: integration-test-xdc-mysql
+          run: functional-test-xdc-mysql
           config: ./develop/buildkite/docker-compose.yml
 
-  - label: ":golang: integration test with postgresql"
+  - label: ":golang: functional test with postgresql"
     agents:
       queue: "default"
       docker: "*"
-    command: "make integration-test-coverage"
+    command: "make functional-test-coverage"
     artifact_paths:
       - ".coverage/*.out"
     retry:
@@ -152,14 +152,14 @@ steps:
         limit: 1
     plugins:
       - docker-compose#v3.8.0:
-          run: integration-test-postgresql
+          run: functional-test-postgresql
           config: ./develop/buildkite/docker-compose.yml
 
-  - label: ":golang: integration xdc test with postgresql"
+  - label: ":golang: functional xdc test with postgresql"
     agents:
       queue: "default"
       docker: "*"
-    command: "make integration-test-xdc-coverage"
+    command: "make functional-test-xdc-coverage"
     artifact_paths:
       - ".coverage/*.out"
     retry:
@@ -167,14 +167,14 @@ steps:
         limit: 1
     plugins:
       - docker-compose#v3.8.0:
-          run: integration-test-xdc-postgresql
+          run: functional-test-xdc-postgresql
           config: ./develop/buildkite/docker-compose.yml
 
-  - label: ":golang: integration ndc test with postgresql"
+  - label: ":golang: functional ndc test with postgresql"
     agents:
       queue: "default"
       docker: "*"
-    command: "make integration-test-ndc-coverage"
+    command: "make functional-test-ndc-coverage"
     artifact_paths:
       - ".coverage/*.out"
     retry:
@@ -182,14 +182,14 @@ steps:
         limit: 1
     plugins:
       - docker-compose#v3.8.0:
-          run: integration-test-xdc-postgresql
+          run: functional-test-xdc-postgresql
           config: ./develop/buildkite/docker-compose.yml
 
-  - label: ":golang: integration test with sqlite"
+  - label: ":golang: functional test with sqlite"
     agents:
       queue: "default"
       docker: "*"
-    command: "make integration-test-coverage"
+    command: "make functional-test-coverage"
     artifact_paths:
       - ".coverage/*.out"
     retry:
@@ -197,7 +197,7 @@ steps:
         limit: 1
     plugins:
       - docker-compose#v3.8.0:
-          run: integration-test-sqlite
+          run: functional-test-sqlite
           config: ./develop/buildkite/docker-compose.yml
 
   - wait

@@ -46,7 +46,7 @@ services:
       - xpack.security.enabled=false
       - ES_JAVA_OPTS=-Xms100m -Xmx100m
 
-  integration-test-cassandra:
+  functional-test-cassandra:
     build:
       context: ../..
       dockerfile: ./develop/buildkite/Dockerfile
@@ -71,7 +71,7 @@ services:
     networks:
       services-network:
         aliases:
-          - integration-test
+          - functional-test
 
 networks:
   services-network:

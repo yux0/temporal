@@ -58,7 +58,7 @@ services:
       - ../..:/temporal
       - /usr/bin/buildkite-agent:/usr/bin/buildkite-agent
 
-  db-integration-test:
+  integration-test:
     build:
       context: ../..
       dockerfile: ./develop/buildkite/Dockerfile
@@ -81,9 +81,9 @@ services:
     networks:
       services-network:
         aliases:
-          - db-integration-test
+          - integration-test
 
-  integration-test-cassandra:
+  functional-test-cassandra:
     build:
       context: ../..
       dockerfile: ./develop/buildkite/Dockerfile
@@ -108,9 +108,9 @@ services:
     networks:
       services-network:
         aliases:
-          - integration-test
+          - functional-test
 
-  integration-test-mysql:
+  functional-test-mysql:
     build:
       context: ../..
       dockerfile: ./develop/buildkite/Dockerfile
@@ -135,9 +135,9 @@ services:
     networks:
       services-network:
         aliases:
-          - integration-test
+          - functional-test
 
-  integration-test-postgresql:
+  functional-test-postgresql:
     build:
       context: ../..
       dockerfile: ./develop/buildkite/Dockerfile
@@ -162,9 +162,9 @@ services:
     networks:
       services-network:
         aliases:
-          - integration-test
+          - functional-test
 
-  integration-test-sqlite:
+  functional-test-sqlite:
     build:
       context: ../..
       dockerfile: ./develop/buildkite/Dockerfile
@@ -182,9 +182,9 @@ services:
     networks:
       services-network:
         aliases:
-          - integration-test
+          - functional-test
 
-  integration-test-xdc-cassandra:
+  functional-test-xdc-cassandra:
     build:
       context: ../..
       dockerfile: ./develop/buildkite/Dockerfile
@@ -210,9 +210,9 @@ services:
     networks:
       services-network:
         aliases:
-          - integration-test-xdc
+          - functional-test-xdc
 
-  integration-test-xdc-mysql:
+  functional-test-xdc-mysql:
     build:
       context: ../..
       dockerfile: ./develop/buildkite/Dockerfile
@@ -240,7 +240,7 @@ services:
         aliases:
           - integration-test-xdc
 
-  integration-test-xdc-postgresql:
+  functional-test-xdc-postgresql:
     build:
       context: ../..
       dockerfile: ./develop/buildkite/Dockerfile
@@ -266,7 +266,7 @@ services:
     networks:
       services-network:
         aliases:
-          - integration-test-xdc
+          - functional-test-xdc
 
   coverage-report:
     build:
