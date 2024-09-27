@@ -218,7 +218,12 @@ func (h *Handler) DeepHealthCheck(
 	latency := h.persistenceHealthSignal.AverageLatency()
 	errRatio := h.persistenceHealthSignal.ErrorRatio()
 
-	if latency > h.config.HealthPersistenceLatencyFailure() || errRatio > h.config.HealthPersistenceErrorRatio() {
+	if latency > h.config.HealthPersistenceLatencyFailure() {
+		h.logger.Warn("health check failed on latency", tag.Value(latency))
+		return &historyservice.DeepHealthCheckResponse{State: enumsspb.HEALTH_STATE_NOT_SERVING}, nil
+	}
+	if errRatio > h.config.HealthPersistenceErrorRatio() {
+		h.logger.Warn("health check failed on error", tag.Value(errRatio))
 		return &historyservice.DeepHealthCheckResponse{State: enumsspb.HEALTH_STATE_NOT_SERVING}, nil
 	}
 	return &historyservice.DeepHealthCheckResponse{State: enumsspb.HEALTH_STATE_SERVING}, nil
