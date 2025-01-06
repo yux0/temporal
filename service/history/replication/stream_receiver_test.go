@@ -25,6 +25,8 @@
 package replication
 
 import (
+	"go.temporal.io/server/common/dynamicconfig"
+	"go.temporal.io/server/service/history/configs"
 	"math/rand"
 	"testing"
 	"time"
@@ -97,7 +99,10 @@ func (s *streamReceiverSuite) SetupTest() {
 		tasks: nil,
 	}
 
+	dc := dynamicconfig.NewNoopCollection()
+	config := configs.NewConfig(dc, 1)
 	processToolBox := ProcessToolBox{
+		Config:                    config,
 		ClusterMetadata:           s.clusterMetadata,
 		HighPriorityTaskScheduler: s.taskScheduler,
 		LowPriorityTaskScheduler:  s.taskScheduler,
@@ -462,10 +467,12 @@ func (s *streamReceiverSuite) TestProcessMessage_Err() {
 }
 
 func (s *streamReceiverSuite) TestSendEventLoop_Panic_Captured() {
+	s.streamReceiver.Config = nil
 	s.streamReceiver.sendEventLoop() // should not cause panic
 }
 
 func (s *streamReceiverSuite) TestRecvEventLoop_Panic_Captured() {
+	s.streamReceiver.Config = nil
 	s.streamReceiver.recvEventLoop() // should not cause panic
 }
 

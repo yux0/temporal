@@ -28,7 +28,9 @@ package replication
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"math/rand"
 	"sync/atomic"
 	"time"
 
@@ -73,6 +75,7 @@ type (
 		taskConverter           ExecutableTaskConverter
 		receiverMode            ReceiverMode
 		flowController          ReceiverFlowController
+		dice                    *rand.Rand
 	}
 )
 
@@ -130,6 +133,7 @@ func NewStreamReceiver(
 		taskConverter:  taskConverter,
 		receiverMode:   ReceiverModeUnset,
 		flowController: NewReceiverFlowControl(taskTrackerMap, processToolBox.Config),
+		dice:           rand.New(rand.NewSource(time.Now().UnixNano())),
 	}
 }
 
@@ -360,6 +364,12 @@ func (r *StreamReceiverImpl) processMessages(
 			Watermark: exclusiveHighWatermark,
 			Timestamp: exclusiveHighWatermarkTime,
 		}, convertedTasks...) {
+			roll := r.dice.Float64()
+			fmt.Println("XXXXX", r.Config.ReplicationTaskDLQErrorRate())
+			if roll < r.Config.ReplicationTaskDLQErrorRate() {
+				task.Nack(errors.New("test dlq"))
+				continue
+			}
 			taskScheduler.Submit(task)
 		}
 	}

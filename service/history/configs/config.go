@@ -295,6 +295,7 @@ type Config struct {
 	ReplicationResendMaxBatchCount                      dynamicconfig.IntPropertyFn
 	ReplicationProgressCacheMaxSize                     dynamicconfig.IntPropertyFn
 	ReplicationProgressCacheTTL                         dynamicconfig.DurationPropertyFn
+	ReplicationTaskDLQErrorRate                         dynamicconfig.FloatPropertyFn
 
 	// The following are used by consistent query
 	MaxBufferedQueryCount dynamicconfig.IntPropertyFn
@@ -544,6 +545,7 @@ func NewConfig(
 		ReplicationResendMaxBatchCount:                      dynamicconfig.ReplicationResendMaxBatchCount.Get(dc),
 		ReplicationProgressCacheMaxSize:                     dynamicconfig.ReplicationProgressCacheMaxSize.Get(dc),
 		ReplicationProgressCacheTTL:                         dynamicconfig.ReplicationProgressCacheTTL.Get(dc),
+		ReplicationTaskDLQErrorRate:                         dynamicconfig.ReplicationTaskDLQErrorRate.Get(dc),
 
 		MaximumBufferedEventsBatch:       dynamicconfig.MaximumBufferedEventsBatch.Get(dc),
 		MaximumBufferedEventsSizeInBytes: dynamicconfig.MaximumBufferedEventsSizeInBytes.Get(dc),

@@ -2318,6 +2318,11 @@ that task will be sent to DLQ.`,
 		time.Hour,
 		`ReplicationProgressCacheTTL is TTL of replication progress cache`,
 	)
+	ReplicationTaskDLQErrorRate = NewGlobalFloatSetting(
+		"history.ReplicationTaskDLQErrorRate",
+		0.0,
+		`ReplicationTaskDLQErrorRate is the error rate to put task into DLQ (test purpose)`,
+	)
 	WorkflowIdReuseMinimalInterval = NewNamespaceDurationSetting(
 		"history.workflowIdReuseMinimalInterval",
 		1*time.Second,
